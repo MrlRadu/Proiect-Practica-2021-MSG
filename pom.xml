@@ -73,6 +73,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- OpenAPI 3 springdoc-openapi -->
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
