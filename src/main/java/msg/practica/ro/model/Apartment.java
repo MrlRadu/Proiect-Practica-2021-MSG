@@ -1,6 +1,7 @@
 package msg.practica.ro.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity(name = "Apartments")
@@ -11,6 +12,7 @@ public class Apartment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
     @Column(nullable = false, length = 200)
     private String titleApart;
 
@@ -41,7 +43,8 @@ public class Apartment {
     @Column(nullable = false, length = 1000)
     private String description;
 
-    @ManyToOne
+    @JoinColumn(name = "OWNER_ID")
+    @ManyToOne(cascade = {CascadeType.ALL})
     private Owner owner;
 
     public Long getId() {
