@@ -54,6 +54,13 @@ public class ApartmentController {
     }
 
     @PostMapping("")
+    @Operation(summary = "Add new apartment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "the apartment was persisted successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Apartment.class))}),
+            @ApiResponse(responseCode = "400", description = "the apartment was NOT persisted",
+                    content = @Content),})
     public Apartment createApartment(@RequestBody @Valid Apartment apartment){
 
         return apartmentRepo.save(apartment);
