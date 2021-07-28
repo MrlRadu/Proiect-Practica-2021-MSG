@@ -43,8 +43,8 @@ public class Apartment {
     @Column(nullable = false, length = 1000)
     private String description;
 
-    @JoinColumn(name = "OWNER_ID", insertable = false, updatable = false)
-    @ManyToOne(cascade = {CascadeType.PERSIST})
+    @JoinColumn(name = "OWNER_ID")
+    @ManyToOne(cascade = {CascadeType.MERGE})
     private Owner owner;
 
     public Long getId() {
