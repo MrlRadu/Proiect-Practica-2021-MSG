@@ -13,10 +13,12 @@ import msg.practica.ro.model.Apartment;
 import msg.practica.ro.repository.ApartmentRepository;
 import msg.practica.ro.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/apartments")
@@ -66,6 +68,34 @@ public class ApartmentController {
         return apartmentRepo.save(apartment);
     }
 
+    @PutMapping("")
+    @Operation(summary = "Update apartment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Apartment successfully updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Apartment.class))}),
+            @ApiResponse(responseCode = "400", description = "Apartment not successfully updated",
+                    content = @Content),})
+    public Apartment updateApartment(@RequestBody final Apartment ap) {
+        return apartmentRepo.save(ap);
+    }
 
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete apartment with certain id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Apartment successfully deleted",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Apartment.class))}),
+            @ApiResponse(responseCode = "400", description = "Apartment not successfully deleted",
+                    content = @Content),})
+    public String deleteApartment(@PathVariable Long id){
+        Optional<Apartment> ap = apartmentRepo.findById(id);
+        if(ap.isPresent()){
+            apartmentRepo.delete(ap.get());
+            return "Apartment with id " + id + " was successfully deleted";
+        }
+        else
+            throw new RuntimeException("Apartment with id " + id + " not found");
 
+    }
 }

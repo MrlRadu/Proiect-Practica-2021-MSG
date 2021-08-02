@@ -44,7 +44,7 @@ public class Apartment {
     private String description;
 
     @JoinColumn(name = "OWNER_ID")
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE})
     private Owner owner;
 
     public Long getId() {
