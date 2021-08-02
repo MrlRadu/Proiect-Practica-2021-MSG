@@ -8,11 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import msg.practica.ro.exception.ApartmentNotFoundException;
 import msg.practica.ro.exception.OwnerNotFoundException;
-import msg.practica.ro.model.Apartment;
 import msg.practica.ro.model.Owner;
-import msg.practica.ro.repository.ApartmentRepository;
 import msg.practica.ro.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +48,7 @@ public class OwnerController {
                     content = @Content)})
     @GetMapping("/{id}")
     public Owner findById(@Parameter(description = "id of owner to be searched")
-                              @PathVariable long id) {
+                          @PathVariable long id) {
         return ownerRepo.findById(id)
                 .orElseThrow(() -> new OwnerNotFoundException(id));
     }
@@ -64,7 +61,7 @@ public class OwnerController {
                             schema = @Schema(implementation = Owner.class))}),
             @ApiResponse(responseCode = "400", description = "Owner NOT persisted successfully",
                     content = @Content),})
-    public Owner createOwner(@RequestBody @Valid Owner onr){
+    public Owner createOwner(@RequestBody @Valid Owner onr) {
 
         return ownerRepo.save(onr);
     }
@@ -89,13 +86,12 @@ public class OwnerController {
                             schema = @Schema(implementation = Owner.class))}),
             @ApiResponse(responseCode = "400", description = "Owner not successfully deleted",
                     content = @Content),})
-    public String deleteOwner(@PathVariable Long id){
+    public String deleteOwner(@PathVariable Long id) {
         Optional<Owner> owner = ownerRepo.findById(id);
-        if(owner.isPresent()){
+        if (owner.isPresent()) {
             ownerRepo.delete(owner.get());
             return "Owner with id " + id + " was successfully deleted";
-        }
-        else
+        } else
             throw new RuntimeException("Owner with id " + id + " not found");
 
     }
