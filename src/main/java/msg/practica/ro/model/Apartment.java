@@ -2,7 +2,6 @@ package msg.practica.ro.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 
 @Entity(name = "Apartments")
 @Table(name = "Apartments")
