@@ -42,6 +42,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());
+        //auth
+        //        .inMemoryAuthentication()
+        //        .withUser("user")
+        //        .password("password")
+        //        .roles("USER");
     }
 
     @Override
@@ -58,7 +63,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and()
 //                .logout().logoutSuccessUrl("/").permitAll();
         http.csrf().disable();
-
+        //        .authorizeRequests()
+         //       .antMatchers("/login").permitAll()
+        //        .anyRequest()
+        //        .authenticated()
+        //        .and()
+        //        .httpBasic();
     }
 
 

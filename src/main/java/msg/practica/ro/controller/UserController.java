@@ -17,11 +17,15 @@ import msg.practica.ro.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.Principal;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/users")
 @Tag(name = "Users", description = "CRUD Operations for Users")
 public class UserController {
@@ -98,5 +102,20 @@ public class UserController {
         else
             throw new RuntimeException("User with id " + id + " not found");
 
+    }
+
+    @RequestMapping("/login")
+    public boolean login(@RequestBody User user) {
+        System.out.println("aici" + user.toString());
+        return
+                user.getEmail().equals("user") && user.getPassword().equals("password");
+    }
+
+    @RequestMapping("/user")
+    public Principal user(HttpServletRequest request) {
+        String authToken = request.getHeader("Authorization")
+                .substring("Basic".length()).trim();
+        return () ->  new String(Base64.getDecoder()
+                .decode(authToken)).split(":")[0];
     }
 }
