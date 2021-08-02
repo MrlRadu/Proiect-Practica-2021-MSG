@@ -1,13 +1,6 @@
 package msg.practica.ro.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Users")
@@ -32,6 +25,22 @@ public class User {
 
     @Column(nullable = false, length = 64)
     private String password;
+
+    @Column(name = "enabled")
+    private boolean verified;
+
+    public User() {
+        super();
+        this.verified = false;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean enabled) {
+        this.verified = enabled;
+    }
 
     public Long getId() {
         return id;
