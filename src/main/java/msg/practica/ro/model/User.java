@@ -33,6 +33,9 @@ public class User {
     @Column(nullable = false, length = 64)
     private String password;
 
+    @Column(nullable = false, length = 10)
+    private boolean verified;
+
     public Long getId() {
         return id;
     }
@@ -71,5 +74,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 }

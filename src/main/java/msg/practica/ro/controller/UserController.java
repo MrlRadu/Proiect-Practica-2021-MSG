@@ -64,7 +64,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", description = "User was NOT persisted successfully",
                     content = @Content),})
-    public User createApartment(@RequestBody @Valid User user){
+    public User createUser(@RequestBody @Valid User user){
 
         return userRepo.save(user);
     }
