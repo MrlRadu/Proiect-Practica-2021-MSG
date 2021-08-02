@@ -8,11 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import msg.practica.ro.exception.ApartmentNotFoundException;
 import msg.practica.ro.exception.UserNotFoundException;
-import msg.practica.ro.model.Apartment;
 import msg.practica.ro.model.User;
-import msg.practica.ro.repository.ApartmentRepository;
 import msg.practica.ro.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -68,7 +65,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", description = "User was NOT persisted successfully",
                     content = @Content),})
-    public User createApartment(@RequestBody @Valid User user){
+    public User createUser(@RequestBody @Valid User user){
 
         return userRepo.save(user);
     }

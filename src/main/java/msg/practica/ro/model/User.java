@@ -83,4 +83,12 @@ public class User {
                 ", password='" + password + '\'' +
                 '}';
     }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
 }
