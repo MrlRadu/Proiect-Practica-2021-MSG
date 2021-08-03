@@ -9,9 +9,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.exception.UserNotFoundException;
+import msg.practica.ro.login.JwtTokenUtil;
+import msg.practica.ro.model.JwtRequest;
+import msg.practica.ro.model.JwtResponse;
 import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -100,13 +104,19 @@ public class UserController {
 
     }
     
-    @CrossOrigin(origins = "http://localhost:4200")
-    @RequestMapping("/login")
-    public boolean login(@RequestBody User user) {
-        System.out.println("aici" + user.toString());
-        return
-                user.getEmail().equals("user") && user.getPassword().equals("password");
+   @CrossOrigin(origins = "http://localhost:4200")
+   @RequestMapping("/login")
+   public String login(@RequestBody User user) {
+       System.out.println("aici" + user.toString());
+
+       JwtTokenUtil util = new JwtTokenUtil();
+    JwtRequest request = new JwtRequest(user.getEmail(), user.getPassword());
+    JwtResponse response = new JwtResponse("random");
+
+        //return user.getEmail().equals("user") && user.getPassword().equals("password");
+        return response.getToken() +"\n" + request.getUsername()+" "+request.getPassword();
     }
+
 
     @RequestMapping("/user")
     public Principal user(HttpServletRequest request) {
