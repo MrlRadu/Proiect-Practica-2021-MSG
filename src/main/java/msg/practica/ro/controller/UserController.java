@@ -78,32 +78,23 @@ public class UserController {
                     content = @Content),})
 
     public UserDTO registerUserAccount(@RequestBody @Valid User user) throws IOException {
-        String siteURL = "http://localhost:8080";
-        return service.registerNewUserAccount(user,siteURL);
+        String siteURL = "http://localhost:4200";
+        return service.registerNewUserAccount(user, siteURL);
     }
 
     //return registered;
-    private boolean verify(String verificationCode) {
-        User user = userRepo.findByVerificationCode(verificationCode);
 
-        if (user == null || user.isVerified()) {
-            return false;
-        } else {
-            user.setVerificationCode(null);
-            user.setVerified(true);
-            userRepo.save(user);
 
-            return true;
-        }
-    }
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/verify")
     public String verifyUser(@Param("code") String code) {
-        if (verify(code)) {
+        if (service.verify(code)) {
             return "verify_success";
         } else {
             return "verify_fail";
         }
     }
+
     @PutMapping("")
     @Operation(summary = "Update user")
     @ApiResponses(value = {
@@ -136,8 +127,6 @@ public class UserController {
     }
 
 
-
-    
     @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping("/login")
     public boolean login(@RequestBody User user) {
@@ -150,7 +139,7 @@ public class UserController {
     public Principal user(HttpServletRequest request) {
         String authToken = request.getHeader("Authorization")
                 .substring("Basic".length()).trim();
-        return () ->  new String(Base64.getDecoder()
+        return () -> new String(Base64.getDecoder()
                 .decode(authToken)).split(":")[0];
     }
 }
