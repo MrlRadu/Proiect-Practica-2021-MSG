@@ -26,8 +26,7 @@ public class User {
     @Column(nullable = false, length = 64)
     private String password;
 
-
-    @Column(name = "enabled")
+    @Column(name = "verified")
     private boolean verified;
 
     @Column(name = "verification_code", length = 64)

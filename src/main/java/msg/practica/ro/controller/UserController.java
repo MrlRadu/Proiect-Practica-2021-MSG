@@ -8,10 +8,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import msg.practica.ro.dto.UserDTO;
 import msg.practica.ro.exception.UserNotFoundException;
 import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
-import msg.practica.ro.service.UserServices;
+import msg.practica.ro.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +32,7 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private UserServices service;
+    private UserService service;
 
     @Autowired
     private UserRepository userRepo;
@@ -75,10 +76,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User was NOT persisted successfully",
                     content = @Content),})
 
-    public User registerUserAccount(@RequestBody @Valid User user) throws IOException {
+    public UserDTO registerUserAccount(@RequestBody @Valid User user) throws IOException {
         String siteURL = "http://localhost:8080";
-        service.register(user,siteURL);
-        return user;
+        return service.registerNewUserAccount(user,siteURL);
     }
 
     //return registered;

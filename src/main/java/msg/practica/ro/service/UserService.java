@@ -7,6 +7,9 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
+import msg.practica.ro.dto.UserDTO;
+import msg.practica.ro.exception.UserAlreadyExistException;
+import msg.practica.ro.mapper.UserMapper;
 import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
 import net.bytebuddy.utility.RandomString;
@@ -14,11 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import java.io.IOException;
 
 @Service
-public class UserServices {
+public class UserService implements IUserService{
     @Autowired
     private UserRepository userRepo;
 
@@ -26,15 +28,25 @@ public class UserServices {
     private PasswordEncoder passwordEncoder;
 
 
+    private boolean emailExists(final String email) {
+        return userRepo.findByEmail(email) != null;
+    }
 
-    public void register(User user, String siteURL) throws IOException {
-//http://localhost:8080/api/users/verify?code=
+
+    public UserDTO registerNewUserAccount(User user, String siteURL) throws IOException {
+        //http://localhost:8080/api/users/verify?code=
+        if (emailExists(user.getEmail())) {
+            throw new UserAlreadyExistException(
+                    "There is an account with the given email adress:" + user.getEmail());
+        }
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         String randomCode = RandomString.make(64);
         user.setVerificationCode(randomCode);
+        user.setVerified(false);
         userRepo.save(user);
         sendVerificationEmail(user, siteURL);
+        return UserMapper.convertEntitytoDTO(user);
     }
 
     private void sendVerificationEmail(User user, String siteURL) throws IOException {
