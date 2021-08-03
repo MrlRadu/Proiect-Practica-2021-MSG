@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.security.Principal;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +74,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", description = "User was NOT persisted successfully",
                     content = @Content),})
+
     public User registerUserAccount(@RequestBody @Valid User user) throws IOException {
         String siteURL = "http://localhost:8080";
         service.register(user,siteURL);
@@ -132,8 +135,21 @@ public class UserController {
     }
 
 
-    private String getSiteURL(HttpServletRequest request) {
-        String siteURL = request.getRequestURL().toString();
-        return siteURL.replace(request.getServletPath(), "");
+
+    
+    @CrossOrigin(origins = "http://localhost:4200")
+    @RequestMapping("/login")
+    public boolean login(@RequestBody User user) {
+        System.out.println("aici" + user.toString());
+        return
+                user.getEmail().equals("user") && user.getPassword().equals("password");
+    }
+
+    @RequestMapping("/user")
+    public Principal user(HttpServletRequest request) {
+        String authToken = request.getHeader("Authorization")
+                .substring("Basic".length()).trim();
+        return () ->  new String(Base64.getDecoder()
+                .decode(authToken)).split(":")[0];
     }
 }

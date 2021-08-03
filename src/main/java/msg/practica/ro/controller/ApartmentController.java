@@ -11,9 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.exception.ApartmentNotFoundException;
 import msg.practica.ro.model.Apartment;
 import msg.practica.ro.repository.ApartmentRepository;
-import msg.practica.ro.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
