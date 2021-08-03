@@ -67,6 +67,7 @@ public class UserController {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200") //solved Cors errors
     @PostMapping("/register")
     @Operation(summary = "Add new user")
     @ApiResponses(value = {
