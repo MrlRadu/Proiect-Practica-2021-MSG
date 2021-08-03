@@ -99,7 +99,7 @@ public class UserController {
             throw new RuntimeException("User with id " + id + " not found");
 
     }
-    
+
     @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping("/login")
     public boolean login(@RequestBody User user) {
