@@ -29,9 +29,20 @@ public class User {
     @Column(name = "enabled")
     private boolean verified;
 
+    @Column(name = "verification_code", length = 64)
+    private String verificationCode;
+
     public User() {
         super();
         this.verified = false;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 
     public boolean isVerified() {

@@ -11,11 +11,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.exception.UserNotFoundException;
 import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
+import msg.practica.ro.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.repository.query.Param;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +29,12 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepo;
+    private UserServices service;
 
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private UserRepository userRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Operation(summary = "Get all users")
     @ApiResponses(value = {
@@ -66,13 +72,34 @@ public class UserController {
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", description = "User was NOT persisted successfully",
                     content = @Content),})
-    public User registerUserAccount(@RequestBody @Valid User user) {
-
-        return userRepo.save(user);
+    public User registerUserAccount(@RequestBody @Valid User user) throws IOException {
+        String siteURL = "http://localhost:8080";
+        service.register(user,siteURL);
+        return user;
     }
+
     //return registered;
+    private boolean verify(String verificationCode) {
+        User user = userRepo.findByVerificationCode(verificationCode);
 
+        if (user == null || user.isVerified()) {
+            return false;
+        } else {
+            user.setVerificationCode(null);
+            user.setVerified(true);
+            userRepo.save(user);
 
+            return true;
+        }
+    }
+    @GetMapping("/verify")
+    public String verifyUser(@Param("code") String code) {
+        if (verify(code)) {
+            return "verify_success";
+        } else {
+            return "verify_fail";
+        }
+    }
     @PutMapping("")
     @Operation(summary = "Update user")
     @ApiResponses(value = {
@@ -102,5 +129,11 @@ public class UserController {
         } else
             throw new RuntimeException("User with id " + id + " not found");
 
+    }
+
+
+    private String getSiteURL(HttpServletRequest request) {
+        String siteURL = request.getRequestURL().toString();
+        return siteURL.replace(request.getServletPath(), "");
     }
 }
