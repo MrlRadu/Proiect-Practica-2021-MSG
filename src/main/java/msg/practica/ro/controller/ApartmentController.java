@@ -29,6 +29,7 @@ public class ApartmentController {
     @Autowired
     private OwnerRepository ownerRepo;
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Get all apartments")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the list of apartments",
@@ -65,10 +66,10 @@ public class ApartmentController {
                             schema = @Schema(implementation = Apartment.class))}),
             @ApiResponse(responseCode = "400", description = "the apartment was NOT persisted",
                     content = @Content),})
-    public Apartment createApartment(@RequestBody @Valid Apartment apartment){
-        try{
+    public Apartment createApartment(@RequestBody @Valid Apartment apartment) {
+        try {
             ownerRepo.save(apartment.getOwner());
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println("Something went wrong!");
         }
         return apartmentRepo.save(apartment);
@@ -94,13 +95,12 @@ public class ApartmentController {
                             schema = @Schema(implementation = Apartment.class))}),
             @ApiResponse(responseCode = "400", description = "Apartment not successfully deleted",
                     content = @Content),})
-    public String deleteApartment(@PathVariable Long id){
+    public String deleteApartment(@PathVariable Long id) {
         Optional<Apartment> ap = apartmentRepo.findById(id);
-        if(ap.isPresent()){
+        if (ap.isPresent()) {
             apartmentRepo.delete(ap.get());
             return "Apartment with id " + id + " was successfully deleted";
-        }
-        else
+        } else
             throw new RuntimeException("Apartment with id " + id + " not found");
 
     }
