@@ -49,10 +49,10 @@ public class Apartment {
     private String description;
 
     @JoinColumn(name = "OWNER_ID")
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE})
     private Owner owner;
 
-    @JoinColumn(name = "PICTURE_ID")
+    @JoinColumn(name = "APARTMENT_ID")
     @OneToMany(cascade = {CascadeType.ALL})
     private List<Picture> pictures;
 
