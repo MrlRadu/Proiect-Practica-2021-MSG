@@ -10,19 +10,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.dto.UserDTO;
 import msg.practica.ro.exception.UserNotFoundException;
+import msg.practica.ro.login.JwtTokenUtil;
+import msg.practica.ro.model.JwtRequest;
 import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
 import msg.practica.ro.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.security.Principal;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,10 +37,23 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+//    @Autowireddsa//sterg + userservice
+//    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private UserService userDetailsService;
+
+    @Autowired
     private UserService service;
 
     @Autowired
     private UserRepository userRepo;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -126,20 +144,49 @@ public class UserController {
 
     }
 
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    @RequestMapping("/login")
-    public boolean login(@RequestBody User user) {
-        System.out.println("aici" + user.toString());
-        return
-                user.getEmail().equals("user") && user.getPassword().equals("password");
+        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+
+        final UserDetails userDetails = userDetailsService
+                .loadUserByUsername(authenticationRequest.getUsername());
+
+        final String token = jwtTokenUtil.generateToken(userDetails);
+
+        final UserDTO currentDTO =  new UserDTO();
+        currentDTO.setEmail(userDetails.getUsername());
+        currentDTO.setEmail(userDetails.getPassword());
+        currentDTO.setToken(token);
+        //userdto.set(token)
+        //returnez userdto
+//        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(currentDTO);
     }
 
-    @RequestMapping("/user")
-    public Principal user(HttpServletRequest request) {
-        String authToken = request.getHeader("Authorization")
-                .substring("Basic".length()).trim();
-        return () -> new String(Base64.getDecoder()
-                .decode(authToken)).split(":")[0];
+    private void authenticate(String username, String password) throws Exception {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (DisabledException e) {
+            throw new Exception("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("INVALID_CREDENTIALS", e);
+        }
     }
+
+//    @CrossOrigin(origins = "http://localhost:4200")
+//    @RequestMapping("/login")
+//    public boolean login(@RequestBody User user) {
+//        System.out.println("aici" + user.toString());
+//        return
+//                user.getEmail().equals("user") && user.getPassword().equals("password");
+//    }
+//
+//    @RequestMapping("/user")
+//    public Principal user(HttpServletRequest request) {
+//        String authToken = request.getHeader("Authorization")
+//                .substring("Basic".length()).trim();
+//        return () -> new String(Base64.getDecoder()
+//                .decode(authToken)).split(":")[0];
+//    }
 }
