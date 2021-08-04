@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
 
@@ -38,9 +39,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Use BCryptPasswordEncoder
         auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
     }
-
-    @Autowired
-    private DataSource dataSource;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -77,7 +75,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //sa securizam rest end point-urile
-        http.csrf().disable();
+        http
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class).csrf().disable()
+                .authorizeRequests()
+                .anyRequest().permitAll();
                 // dont authenticate this particular request
 //                authorizeRequests().antMatchers("/login").permitAll().
 //                // all other requests need to be authenticated

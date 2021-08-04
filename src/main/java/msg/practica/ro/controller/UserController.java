@@ -14,6 +14,7 @@ import msg.practica.ro.login.JwtTokenUtil;
 import msg.practica.ro.model.JwtRequest;
 import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
+import msg.practica.ro.service.CustomUserDetails;
 import msg.practica.ro.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -149,15 +150,15 @@ public class UserController {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-        final UserDetails userDetails = userDetailsService
+        final CustomUserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         final UserDTO currentDTO =  new UserDTO();
         currentDTO.setEmail(userDetails.getUsername());
-        currentDTO.setEmail(userDetails.getPassword());
         currentDTO.setToken(token);
+        currentDTO.setFullName(userDetails.getFullName());
         //userdto.set(token)
         //returnez userdto
 //        return ResponseEntity.ok(new JwtResponse(token));
