@@ -86,6 +86,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //sa securizam rest end point-urile
         http.csrf().disable();
                 // dont authenticate this particular request
                 //.authorizeRequests().antMatchers("/login").permitAll().
