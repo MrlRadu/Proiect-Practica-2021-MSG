@@ -49,6 +49,20 @@ public class UserService implements IUserService{
         return UserMapper.convertEntitytoDTO(user);
     }
 
+    public boolean verify(String verificationCode) {
+        User user = userRepo.findByVerificationCode(verificationCode);
+
+        if (user == null || user.isVerified()) {
+            return false;
+        } else {
+            user.setVerificationCode(null);
+            user.setVerified(true);
+            userRepo.save(user);
+
+            return true;
+        }
+    }
+
     private void sendVerificationEmail(User user, String siteURL) throws IOException {
         Email fromEmail = new Email();
         fromEmail.setName("KeepITsimpleImobiliare");
@@ -61,7 +75,8 @@ public class UserService implements IUserService{
         personalization.addDynamicTemplateData("last_name",user.getLastName());
 
         //http://localhost:8080/api/users/verify?code=
-        String verifyURL = siteURL + "/api/users/verify?code=" + user.getVerificationCode();
+        String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
+        System.out.println(verifyURL);
 
         personalization.addDynamicTemplateData("link",verifyURL);
         personalization.addTo(new Email(user.getEmail()));
