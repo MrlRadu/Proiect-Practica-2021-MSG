@@ -14,13 +14,16 @@ import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 @Service
-public class UserService implements IUserService{
+public class UserService implements IUserService, UserDetailsService {
     @Autowired
     private UserRepository userRepo;
 
@@ -96,4 +99,15 @@ public class UserService implements IUserService{
         }
 
     }
+
+    @Override
+    public CustomUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepo.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        return new CustomUserDetails(user);
+    }
+
 }
