@@ -1,9 +1,15 @@
 package msg.practica.ro.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity(name = "Apartments")
+@Getter
+@Setter
 @Table(name = "Apartments")
 public class Apartment {
 
@@ -43,120 +49,11 @@ public class Apartment {
     private String description;
 
     @JoinColumn(name = "OWNER_ID")
-    @ManyToOne(cascade = {CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.ALL})
     private Owner owner;
 
-    public Long getId() {
-        return id;
-    }
+    @JoinColumn(name = "PICTURE_ID")
+    @OneToMany(cascade = {CascadeType.ALL})
+    private List<Picture> pictures;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitleApart() {
-        return titleApart;
-    }
-
-    public void setTitleApart(String titleApart) {
-        this.titleApart = titleApart;
-    }
-
-    public String getTransactionType() {
-        return transactionType;
-    }
-
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
-    }
-
-    public String getPropertyType() {
-        return propertyType;
-    }
-
-    public void setPropertyType(String propertyType) {
-        this.propertyType = propertyType;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getNeighbourhood() {
-        return neighbourhood;
-    }
-
-    public void setNeighbourhood(String neighbourhood) {
-        this.neighbourhood = neighbourhood;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
-    public Integer getNrRooms() {
-        return nrRooms;
-    }
-
-    public void setNrRooms(Integer nrRooms) {
-        this.nrRooms = nrRooms;
-    }
-
-    public Integer getSurface() {
-        return surface;
-    }
-
-    public void setSurface(Integer surface) {
-        this.surface = surface;
-    }
-
-    public Integer getYearConstruction() {
-        return yearConstruction;
-    }
-
-    public void setYearConstruction(Integer yearConstruction) {
-        this.yearConstruction = yearConstruction;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Owner getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Owner owner) {
-        this.owner = owner;
-    }
-
-    @Override
-    public String toString() {
-        return "Apartment{" +
-                "id=" + id +
-                ", titleApart='" + titleApart + '\'' +
-                ", transactionType='" + transactionType + '\'' +
-                ", propertyType='" + propertyType + '\'' +
-                ", city='" + city + '\'' +
-                ", neighbourhood='" + neighbourhood + '\'' +
-                ", price=" + price +
-                ", nrRooms=" + nrRooms +
-                ", surface=" + surface +
-                ", yearConstruction=" + yearConstruction +
-                ", description='" + description + '\'' +
-                ", owner=" + owner +
-                '}';
-    }
 }

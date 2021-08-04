@@ -13,10 +13,6 @@ public class Picture {
     @Column(name="picture_url", nullable = false, length = 2000)
     private String url;
 
-    @JoinColumn(name = "APARTMENT_ID")
-    @ManyToOne(cascade = {CascadeType.MERGE})
-    private Apartment apartment;
-
     public Long getId() {
         return id;
     }
@@ -31,22 +27,5 @@ public class Picture {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public Apartment getApartment() {
-        return apartment;
-    }
-
-    public void setApartment(Apartment apartment) {
-        this.apartment = apartment;
-    }
-
-    @Override
-    public String toString() {
-        return "Picture{" +
-                "id=" + id +
-                ", url='" + url + '\'' +
-                ", apartment=" + apartment +
-                '}';
     }
 }
