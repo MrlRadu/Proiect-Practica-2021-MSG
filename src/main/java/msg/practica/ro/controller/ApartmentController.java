@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.exception.ApartmentNotFoundException;
 import msg.practica.ro.model.Apartment;
 import msg.practica.ro.repository.ApartmentRepository;
+import msg.practica.ro.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,9 @@ import java.util.Optional;
 public class ApartmentController {
     @Autowired
     private ApartmentRepository apartmentRepo;
+
+    @Autowired
+    private OwnerRepository ownerRepo;
 
     @Operation(summary = "Get all apartments")
     @ApiResponses(value = {
@@ -62,7 +66,11 @@ public class ApartmentController {
             @ApiResponse(responseCode = "400", description = "the apartment was NOT persisted",
                     content = @Content),})
     public Apartment createApartment(@RequestBody @Valid Apartment apartment){
-
+        try{
+            ownerRepo.save(apartment.getOwner());
+        }catch(Exception e){
+            System.out.println("Something went wrong!");
+        }
         return apartmentRepo.save(apartment);
     }
 
