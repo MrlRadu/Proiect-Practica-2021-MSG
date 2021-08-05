@@ -42,6 +42,7 @@ public class ApartmentController {
         return apartmentRepo.findAll();
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Get an apartment by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the apartment",
