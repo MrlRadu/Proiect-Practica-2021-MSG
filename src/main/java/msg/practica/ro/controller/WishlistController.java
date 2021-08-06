@@ -37,6 +37,18 @@ public class WishlistController {
         return wishlistRepo.findAll();
     }
 
+    @Operation(summary = "Get the wishlist from a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the wishlist",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = Wishlist.class)))}),
+            @ApiResponse(responseCode = "404", description = "List not found",
+                    content = @Content)})
+    @GetMapping("/{id}")
+    public List<Wishlist> findAllApartments(@PathVariable Long id) {
+        return wishlistRepo.findAllByUserId(id);
+    }
+
     @PostMapping("")
     @Operation(summary = "Add new wishlist")
     @ApiResponses(value = {
@@ -45,10 +57,17 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "the wishlist was NOT persisted",
                     content = @Content),})
+//    public Wishlist createWishlist(Long userId, Long apartmentId){
+//
+//        Wishlist wishlist = new Wishlist(userId, apartmentId);
+//        System.out.println(wishlist.getUser());
+//        System.out.println(wishlist.getApartment());
+//        return wishlistRepo.save(wishlist);
+//    }
     public Wishlist createWishlist(@RequestBody @Valid Wishlist wishlist){
-
         return wishlistRepo.save(wishlist);
     }
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete wishlist with certain id")
