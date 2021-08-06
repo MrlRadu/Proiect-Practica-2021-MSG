@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/apartments")
 @Tag(name = "Apartments", description = "CRUD Operations for Apartments")
 public class ApartmentController {

@@ -21,6 +21,19 @@ public class Wishlist {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    public Wishlist() {}
+
+//    public Wishlist(Long userId, Long apartmentId) {
+//        UserController userController = new UserController();
+//        UserRepository userRepository = userController.getUserRepo();
+//
+//        ApartmentController apartmentController = new ApartmentController();
+//        ApartmentRepository apartmentRepository = apartmentController.getApartmentRepo();
+//
+//        this.user = userRepository.findUserById(userId);
+//        this.apartment = apartmentRepository.findApartmentById(apartmentId);
+//    }
+
     @Override
     public String toString() {
         return "Wishlist{" +
