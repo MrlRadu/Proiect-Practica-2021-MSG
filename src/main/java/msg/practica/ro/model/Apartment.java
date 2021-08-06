@@ -56,4 +56,18 @@ public class Apartment {
     @OneToMany(cascade = {CascadeType.ALL})
     private List<Picture> pictures;
 
+    @Override
+    public String toString() {
+        return
+                "Title: " + titleApart +
+                ", Transaction Type: " + transactionType +
+                ",\nProperty Type:" + propertyType +
+                ", City: " + city +
+                ", Neighbourhood: " + neighbourhood +
+                ",\nPrice:" + price +
+                ", Nr Rooms:" + nrRooms +
+                ", Surface:" + surface +
+                ",\nYear Construction:" + yearConstruction +
+                ", Description: " + description;
+    }
 }
