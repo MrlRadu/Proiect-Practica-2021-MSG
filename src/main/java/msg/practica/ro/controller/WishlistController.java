@@ -8,12 +8,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.model.Apartment;
+import msg.practica.ro.model.User;
 import msg.practica.ro.model.Wishlist;
 import msg.practica.ro.repository.ApartmentRepository;
 import msg.practica.ro.repository.WishlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +28,9 @@ import java.util.Optional;
 public class WishlistController {
     @Autowired
     private WishlistRepository wishlistRepo;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Operation(summary = "Get all wishlists")
     @ApiResponses(value = {
@@ -49,7 +56,8 @@ public class WishlistController {
         return wishlistRepo.findAllByUserId(id);
     }
 
-    @PostMapping("")
+    @Transactional
+    @PostMapping("/{userId}/{apartmentId}")
     @Operation(summary = "Add new wishlist")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "the wishlist was persisted successfully",
@@ -57,16 +65,16 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "the wishlist was NOT persisted",
                     content = @Content),})
-//    public Wishlist createWishlist(Long userId, Long apartmentId){
-//
-//        Wishlist wishlist = new Wishlist(userId, apartmentId);
-//        System.out.println(wishlist.getUser());
-//        System.out.println(wishlist.getApartment());
+    public void createWishlistWithQuery(@PathVariable Long userId, @PathVariable Long apartmentId){
+
+        this.entityManager.createNativeQuery("insert into wishlist (user_id, apartment_id) values (?, ?)")
+                .setParameter(1, userId)
+                .setParameter(2, apartmentId)
+                .executeUpdate();
+    }
+//    public Wishlist createWishlist(@RequestBody @Valid Wishlist wishlist){
 //        return wishlistRepo.save(wishlist);
 //    }
-    public Wishlist createWishlist(@RequestBody @Valid Wishlist wishlist){
-        return wishlistRepo.save(wishlist);
-    }
 
 
     @DeleteMapping("/{id}")

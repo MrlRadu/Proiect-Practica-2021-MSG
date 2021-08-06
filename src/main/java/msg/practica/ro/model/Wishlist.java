@@ -2,6 +2,8 @@ package msg.practica.ro.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import msg.practica.ro.controller.UserController;
+import msg.practica.ro.repository.UserRepository;
 
 import javax.persistence.*;
 
@@ -18,13 +20,12 @@ public class Wishlist {
     @JoinColumn(name = "apartment_id")
     Apartment apartment;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Wishlist() {}
-
+//    public Wishlist() {}
+//
 //    public Wishlist(Long userId, Long apartmentId) {
-//        UserController userController = new UserController();
 //        UserRepository userRepository = userController.getUserRepo();
 //
 //        ApartmentController apartmentController = new ApartmentController();
