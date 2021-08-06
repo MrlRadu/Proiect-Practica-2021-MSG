@@ -10,22 +10,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.model.Apartment;
-import msg.practica.ro.model.User;
 import msg.practica.ro.model.Wishlist;
 import msg.practica.ro.repository.ApartmentRepository;
 import msg.practica.ro.repository.WishlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import java.io.*;
-import java.net.MalformedURLException;
+import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
+import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
-import java.net.http.HttpHeaders;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,10 +70,10 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "the wishlist was NOT persisted",
                     content = @Content),})
-    public void createWishlistWithQuery(@PathVariable String email, @PathVariable Long apartmentId){
+    public void createWishlistWithQuery(@PathVariable String email, @PathVariable Long apartmentId) {
 
         StoredProcedureQuery storedProcedure = this.entityManager.createStoredProcedureQuery("inserttowishlist")
-                .registerStoredProcedureParameter(0 , String.class , ParameterMode.IN)
+                .registerStoredProcedureParameter(0, String.class, ParameterMode.IN)
                 .registerStoredProcedureParameter(1, Long.class, ParameterMode.IN);
 
         storedProcedure.setParameter(0, email)
@@ -98,41 +95,41 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "Wishlist not successfully deleted",
                     content = @Content),})
-    public String deleteWishlist(@PathVariable Long id){
+    public String deleteWishlist(@PathVariable Long id) {
         Optional<Wishlist> w = wishlistRepo.findById(id);
-        if(w.isPresent()){
+        if (w.isPresent()) {
             wishlistRepo.delete(w.get());
             return "Wishlist with id " + id + " was successfully deleted";
         } else
             throw new RuntimeException("Wishlist with id " + id + " not found");
 
     }
-    @ResponseBody
-    @RequestMapping(value = "/pdf", headers="Accept=*/*", method = RequestMethod.GET, produces = "application/pdf")
-//    @GetMapping("/pdf")
-    public ByteArrayInputStream generatePdf() throws DocumentException, IOException {
+
+    //    @ResponseBody
+//    @RequestMapping(value = "/pdf", headers = "Accept=*/*", method = RequestMethod.GET, produces = "application/document")
+    @GetMapping("/pdf")
+    public String generatePdf() throws DocumentException, IOException {
         Font details = FontFactory.getFont(FontFactory.TIMES, 14, Font.BOLD, BaseColor.BLACK);
         Document document = new Document();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
         PdfWriter.getInstance(document, new FileOutputStream("KeepITsimple-Imobiliare.pdf"));
 
-        document.open();
         Font font = FontFactory.getFont(FontFactory.COURIER, 12, BaseColor.BLACK);
-        int current=1;
+        int current = 1;
+        document.open();
         for (Apartment a : apartmentRepository.findAll()) {
 
-            if(current!=1){
+            if (current != 1) {
                 Paragraph chunk = new Paragraph("........................................................................\n", font);
                 document.add(chunk);
             }
-            Paragraph paragraph0 = new Paragraph("Apartment "+current+" Details", details);
+            Paragraph paragraph0 = new Paragraph("Apartment " + current + " Details", details);
             Paragraph paragraph1 = new Paragraph(a.toString(), font);
             String imageUrl = a.getPictures().get(0).getUrl();
             Image image2 = Image.getInstance(new URL(imageUrl));
             image2.scaleAbsolute(250, 200);
-            if (current==6){
-            image2.scaleAbsolute(150, 100);
-            }
+//            if (current == 6) {
+//                image2.scaleAbsolute(150, 100);
+//            }
             Paragraph paragraph3 = new Paragraph("Owner Details", details);
             Paragraph paragraph2 = new Paragraph(a.getOwner().toString(), font);
             current++;
@@ -146,11 +143,6 @@ public class WishlistController {
 
         }
         document.close();
-
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        InputStreamResource inputStreamResource = new InputStreamResource(document);
-//        responseHeaders.setContentType(MediaType.valueOf("application/pdf"));
-
-        return new ByteArrayInputStream(out.toByteArray());
+        return document.toString();
     }
 }
