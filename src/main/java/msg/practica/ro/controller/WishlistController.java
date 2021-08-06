@@ -16,8 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -56,8 +55,7 @@ public class WishlistController {
         return wishlistRepo.findAllByUserId(id);
     }
 
-    @Transactional
-    @PostMapping("/{userId}/{apartmentId}")
+    @PostMapping("/{email}/{apartmentId}")
     @Operation(summary = "Add new wishlist")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "the wishlist was persisted successfully",
@@ -65,12 +63,17 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "the wishlist was NOT persisted",
                     content = @Content),})
-    public void createWishlistWithQuery(@PathVariable Long userId, @PathVariable Long apartmentId){
+    public void createWishlistWithQuery(@PathVariable String email, @PathVariable Long apartmentId){
 
-        this.entityManager.createNativeQuery("insert into wishlist (user_id, apartment_id) values (?, ?)")
-                .setParameter(1, userId)
-                .setParameter(2, apartmentId)
-                .executeUpdate();
+        StoredProcedureQuery storedProcedure = this.entityManager.createStoredProcedureQuery("inserttowishlist")
+                .registerStoredProcedureParameter(0 , String.class , ParameterMode.IN)
+                .registerStoredProcedureParameter(1, Long.class, ParameterMode.IN);
+
+        storedProcedure.setParameter(0, email)
+                .setParameter(1, apartmentId);
+
+        storedProcedure.execute();
+
     }
 //    public Wishlist createWishlist(@RequestBody @Valid Wishlist wishlist){
 //        return wishlistRepo.save(wishlist);
