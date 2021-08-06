@@ -2,6 +2,8 @@ package msg.practica.ro.controller;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.sun.mail.imap.protocol.Item;
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import javax.validation.Valid;
+import javax.persistence.EntityManager;
 import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
@@ -29,13 +39,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/wishlist")
 @Tag(name = "Wishlist", description = "CRUD Operations for Wishlist")
+@Transactional
 public class WishlistController {
     @Autowired
     private WishlistRepository wishlistRepo;
     @Autowired
     private ApartmentRepository apartmentRepository;
 
-    @PersistenceContext
+    @Autowired
     private EntityManager entityManager;
 
     @Operation(summary = "Get all wishlists")
@@ -82,10 +93,6 @@ public class WishlistController {
         storedProcedure.execute();
 
     }
-//    public Wishlist createWishlist(@RequestBody @Valid Wishlist wishlist){
-//        return wishlistRepo.save(wishlist);
-//    }
-
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete wishlist with certain id")
@@ -145,4 +152,47 @@ public class WishlistController {
         document.close();
         return document.toString();
     }
+
+    //delete din wishlist -> where user=... and apart=...
+
+    @DeleteMapping("")
+    @Operation(summary = "Delete apartment from user wishlist")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully deleted from wishlist",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Wishlist.class))}),
+            @ApiResponse(responseCode = "400", description = "Not successfully deleted from wishlist",
+                    content = @Content),})
+    public String deleteFromWishlist(@RequestBody @Valid Wishlist wishlist){
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaDelete<Wishlist> criteriaDelete = cb.createCriteriaDelete(Wishlist.class);
+        Root root = criteriaDelete.from(Wishlist.class);
+        Predicate apart = cb.equal(root.get("apartment").get("id"),wishlist.getApartment().getId());
+        Predicate user = cb.equal(root.get("user").get("id"),wishlist.getUser().getId());
+        criteriaDelete.where(apart, user);
+
+        Query q = entityManager.createQuery(criteriaDelete);
+        q.executeUpdate();
+
+        return "deleted successfully from wishlist";
+
+    }
+
+    //with native query
+
+//    public String deleteFromWishlist(@RequestBody @Valid Wishlist wishlist){
+//        entityManager.persist(wishlist);
+//        entityManager.flush();
+//        entityManager.clear();
+//
+//
+//        //not a good solution
+//        entityManager.createNativeQuery("DELETE FROM Wishlist w WHERE w.apartment_id = :apart_id AND w.user_id= :user_id") // and w.user.email = :user_email
+//                .setParameter("apart_id",wishlist.getApartment().getId())
+//                .setParameter("user_id",wishlist.getUser().getId())
+//                .executeUpdate();
+//
+//        return "Deleted from wishlist";// where apartmentId = " + apartment.getId() + " and userEmail = " + user.getEmail();
+//    }
+
 }
