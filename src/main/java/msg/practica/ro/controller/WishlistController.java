@@ -2,8 +2,6 @@ package msg.practica.ro.controller;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.sun.mail.imap.protocol.Item;
-import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,21 +13,25 @@ import msg.practica.ro.model.Apartment;
 import msg.practica.ro.model.Wishlist;
 import msg.practica.ro.repository.ApartmentRepository;
 import msg.practica.ro.repository.WishlistRepository;
+import msg.practica.ro.service.GeneratePdfReport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.persistence.EntityManager;
-import javax.persistence.ParameterMode;
-import javax.persistence.PersistenceContext;
-import javax.persistence.StoredProcedureQuery;
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -43,12 +45,14 @@ import java.util.Optional;
 public class WishlistController {
     @Autowired
     private WishlistRepository wishlistRepo;
+
     @Autowired
     private ApartmentRepository apartmentRepository;
 
     @Autowired
     private EntityManager entityManager;
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Get all wishlists")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the list of wishlists",
@@ -68,6 +72,7 @@ public class WishlistController {
                             array = @ArraySchema(schema = @Schema(implementation = Wishlist.class)))}),
             @ApiResponse(responseCode = "404", description = "List not found",
                     content = @Content)})
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/{id}")
     public List<Wishlist> findAllApartments(@PathVariable Long id) {
         return wishlistRepo.findAllByUserId(id);
@@ -94,6 +99,7 @@ public class WishlistController {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete wishlist with certain id")
     @ApiResponses(value = {
@@ -112,46 +118,32 @@ public class WishlistController {
 
     }
 
-    //    @ResponseBody
-//    @RequestMapping(value = "/pdf", headers = "Accept=*/*", method = RequestMethod.GET, produces = "application/document")
-    @GetMapping("/pdf")
-    public String generatePdf() throws DocumentException, IOException {
-        Font details = FontFactory.getFont(FontFactory.TIMES, 14, Font.BOLD, BaseColor.BLACK);
-        Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream("KeepITsimple-Imobiliare.pdf"));
+    @CrossOrigin(origins = "http://localhost:4200")
+    @Operation(summary = "generate pdf with apartments from wishlist")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "pdf successfully generated",
+                    content = {@Content(mediaType = "application/pdf",
+                            schema = @Schema(implementation = Wishlist.class))}),
+            @ApiResponse(responseCode = "400", description = "pdf not successfully generated",
+                    content = @Content),})
+    @RequestMapping(value = "/pdf", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> wishlistReport() throws DocumentException, IOException {
 
-        Font font = FontFactory.getFont(FontFactory.COURIER, 12, BaseColor.BLACK);
-        int current = 1;
-        document.open();
-        for (Apartment a : apartmentRepository.findAll()) {
+        var apartments =  apartmentRepository.findAll();
 
-            if (current != 1) {
-                Paragraph chunk = new Paragraph("........................................................................\n", font);
-                document.add(chunk);
-            }
-            Paragraph paragraph0 = new Paragraph("Apartment " + current + " Details", details);
-            Paragraph paragraph1 = new Paragraph(a.toString(), font);
-            String imageUrl = a.getPictures().get(0).getUrl();
-            Image image2 = Image.getInstance(new URL(imageUrl));
-            image2.scaleAbsolute(250, 200);
-//            if (current == 6) {
-//                image2.scaleAbsolute(150, 100);
-//            }
-            Paragraph paragraph3 = new Paragraph("Owner Details", details);
-            Paragraph paragraph2 = new Paragraph(a.getOwner().toString(), font);
-            current++;
+        ByteArrayInputStream bis = GeneratePdfReport.generatePdf(apartments);
 
+        var headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=KeepITsimple-Imobiliare.pdf");
 
-            document.add(paragraph0);
-            document.add(paragraph1);
-            document.add(image2);
-            document.add(paragraph3);
-            document.add(paragraph2);
-
-        }
-        document.close();
-        return document.toString();
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
     }
+
 
     //delete din wishlist -> where user=... and apart=...
 
@@ -163,12 +155,12 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "Not successfully deleted from wishlist",
                     content = @Content),})
-    public String deleteFromWishlist(@RequestBody @Valid Wishlist wishlist){
+    public String deleteFromWishlist(@RequestBody @Valid Wishlist wishlist) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<Wishlist> criteriaDelete = cb.createCriteriaDelete(Wishlist.class);
         Root root = criteriaDelete.from(Wishlist.class);
-        Predicate apart = cb.equal(root.get("apartment").get("id"),wishlist.getApartment().getId());
-        Predicate user = cb.equal(root.get("user").get("id"),wishlist.getUser().getId());
+        Predicate apart = cb.equal(root.get("apartment").get("id"), wishlist.getApartment().getId());
+        Predicate user = cb.equal(root.get("user").get("id"), wishlist.getUser().getId());
         criteriaDelete.where(apart, user);
 
         Query q = entityManager.createQuery(criteriaDelete);

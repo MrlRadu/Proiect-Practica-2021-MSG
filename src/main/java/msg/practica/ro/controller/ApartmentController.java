@@ -60,6 +60,7 @@ public class ApartmentController {
                 .orElseThrow(() -> new ApartmentNotFoundException(id));
     }
 
+
     @PostMapping("")
     @Operation(summary = "Add new apartment")
     @ApiResponses(value = {
