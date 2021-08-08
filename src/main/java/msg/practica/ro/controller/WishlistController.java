@@ -1,7 +1,6 @@
 package msg.practica.ro.controller;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.DocumentException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,8 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.model.Apartment;
+import msg.practica.ro.model.User;
 import msg.practica.ro.model.Wishlist;
 import msg.practica.ro.repository.ApartmentRepository;
+import msg.practica.ro.repository.UserRepository;
 import msg.practica.ro.repository.WishlistRepository;
 import msg.practica.ro.service.GeneratePdfReport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,8 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +51,9 @@ public class WishlistController {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Get all wishlists")
@@ -126,12 +129,17 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "pdf not successfully generated",
                     content = @Content),})
-    @RequestMapping(value = "/pdf", method = RequestMethod.GET,
+    @RequestMapping(value = "/pdf/{email}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> wishlistReport() throws DocumentException, IOException {
+    public ResponseEntity<InputStreamResource> wishlistReport(@PathVariable String email) throws DocumentException, IOException {
 
-        var apartments =  apartmentRepository.findAll();
-
+        User user = userRepository.findByEmail(email);
+        var wishlist = wishlistRepo.findAllByUserId(user.getId());
+        List<Apartment> apartments = new ArrayList<>();
+        for (var apartment : wishlist) {
+            apartments.add(apartment.getApartment());
+        }
+        System.out.println(email);
         ByteArrayInputStream bis = GeneratePdfReport.generatePdf(apartments);
 
         var headers = new HttpHeaders();

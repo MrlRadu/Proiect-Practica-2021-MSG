@@ -36,7 +36,7 @@ public class GeneratePdfReport {
             Paragraph paragraph1 = new Paragraph(a.toString(), font);
             String imageUrl = a.getPictures().get(0).getUrl();
             Image image2 = Image.getInstance(new URL(imageUrl));
-            image2.scaleAbsolute(250, 141);
+            image2.scaleAbsolute(256, 144);
 //            if (current == 6) {
 //                image2.scaleAbsolute(150, 100);
 //            }
