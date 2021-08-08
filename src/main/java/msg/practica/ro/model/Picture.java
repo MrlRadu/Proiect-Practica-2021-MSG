@@ -17,4 +17,11 @@ public class Picture {
 
     @Column(name = "picture_url", nullable = false, length = 2000)
     private String url;
+
+    @Override
+    public String toString() {
+        return "Picture{" +
+                "url='" + url + '\'' +
+                '}';
+    }
 }

@@ -29,12 +29,9 @@ public class Owner {
 
     @Override
     public String toString() {
-        return "Owner{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                ", urlStatisticsChart='" + urlStatisticsChart + '\'' +
-                '}';
+        return "First Name: " + firstName +
+                ", lastName:" + lastName +
+                ", phoneNumber: " + phoneNumber +
+                ",\nStatistics Chart: " + urlStatisticsChart;
     }
 }
