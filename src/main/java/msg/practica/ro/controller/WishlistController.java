@@ -11,10 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import msg.practica.ro.model.Apartment;
 import msg.practica.ro.model.User;
 import msg.practica.ro.model.Wishlist;
-import msg.practica.ro.repository.ApartmentRepository;
 import msg.practica.ro.repository.UserRepository;
 import msg.practica.ro.repository.WishlistRepository;
 import msg.practica.ro.service.GeneratePdfReport;
+import msg.practica.ro.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -23,15 +23,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.ParameterMode;
 import javax.persistence.Query;
-import javax.persistence.StoredProcedureQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +44,7 @@ public class WishlistController {
     private WishlistRepository wishlistRepo;
 
     @Autowired
-    private ApartmentRepository apartmentRepository;
+    private WishlistService wishlistService;
 
     @Autowired
     private EntityManager entityManager;
@@ -81,7 +78,7 @@ public class WishlistController {
         return wishlistRepo.findAllByUserId(id);
     }
 
-    @PostMapping("/{email}/{apartmentId}")
+    @PostMapping("/{userId}/{apartmentId}")
     @Operation(summary = "Add new wishlist")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "the wishlist was persisted successfully",
@@ -89,16 +86,8 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "the wishlist was NOT persisted",
                     content = @Content),})
-    public void createWishlistWithQuery(@PathVariable String email, @PathVariable Long apartmentId) {
-
-        StoredProcedureQuery storedProcedure = this.entityManager.createStoredProcedureQuery("inserttowishlist")
-                .registerStoredProcedureParameter(0, String.class, ParameterMode.IN)
-                .registerStoredProcedureParameter(1, Long.class, ParameterMode.IN);
-
-        storedProcedure.setParameter(0, email)
-                .setParameter(1, apartmentId);
-
-        storedProcedure.execute();
+    public void createWishlistWithQuery(@PathVariable Long userId, @PathVariable Long apartmentId) {
+        wishlistService.insertIntoWishlist(userId, apartmentId);
 
     }
 
@@ -155,7 +144,7 @@ public class WishlistController {
 
     //delete din wishlist -> where user=... and apart=...
 
-    @DeleteMapping("")
+    @DeleteMapping("/user/{userId}/apartment/{apId}")
     @Operation(summary = "Delete apartment from user wishlist")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully deleted from wishlist",
@@ -163,12 +152,12 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "Not successfully deleted from wishlist",
                     content = @Content),})
-    public String deleteFromWishlist(@RequestBody @Valid Wishlist wishlist) {
+    public String deleteFromWishlist(@PathVariable String apId, @PathVariable String userId) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<Wishlist> criteriaDelete = cb.createCriteriaDelete(Wishlist.class);
         Root root = criteriaDelete.from(Wishlist.class);
-        Predicate apart = cb.equal(root.get("apartment").get("id"), wishlist.getApartment().getId());
-        Predicate user = cb.equal(root.get("user").get("id"), wishlist.getUser().getId());
+        Predicate apart = cb.equal(root.get("apartment").get("id"), apId);
+        Predicate user = cb.equal(root.get("user").get("id"), userId);
         criteriaDelete.where(apart, user);
 
         Query q = entityManager.createQuery(criteriaDelete);
