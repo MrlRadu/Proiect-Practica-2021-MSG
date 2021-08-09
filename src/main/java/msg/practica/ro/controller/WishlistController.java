@@ -31,7 +31,6 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,7 +73,7 @@ public class WishlistController {
                     content = @Content)})
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/{id}")
-    public List<Wishlist> findAllApartments(@PathVariable Long id) {
+    public List<Apartment> findAllApartments(@PathVariable Long id) {
         return wishlistRepo.findAllByUserId(id);
     }
 
@@ -124,11 +123,7 @@ public class WishlistController {
     public ResponseEntity<InputStreamResource> wishlistReport(@PathVariable String email) throws DocumentException, IOException {
 
         User user = userRepository.findByEmail(email);
-        var wishlist = wishlistRepo.findAllByUserId(user.getId());
-        List<Apartment> apartments = new ArrayList<>();
-        for (var apartment : wishlist) {
-            apartments.add(apartment.getApartment());
-        }
+        List<Apartment> apartments = wishlistRepo.findAllByUserId(user.getId());
         System.out.println(email);
         ByteArrayInputStream bis = GeneratePdfReport.generatePdf(apartments);
 
@@ -144,7 +139,7 @@ public class WishlistController {
 
 
     //delete din wishlist -> where user=... and apart=...
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping("/user/{userId}/apartment/{apId}")
     @Operation(summary = "Delete apartment from user wishlist")
     @ApiResponses(value = {
@@ -153,7 +148,7 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "Not successfully deleted from wishlist",
                     content = @Content),})
-    public String deleteFromWishlist(@PathVariable String apId, @PathVariable String userId) {
+    public void deleteFromWishlist(@PathVariable String apId, @PathVariable String userId) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<Wishlist> criteriaDelete = cb.createCriteriaDelete(Wishlist.class);
         Root root = criteriaDelete.from(Wishlist.class);
@@ -164,7 +159,7 @@ public class WishlistController {
         Query q = entityManager.createQuery(criteriaDelete);
         q.executeUpdate();
 
-        return "deleted successfully from wishlist";
+//        return "deleted successfully from wishlist";
 
     }
 
