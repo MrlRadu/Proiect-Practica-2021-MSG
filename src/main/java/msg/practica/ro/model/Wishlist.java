@@ -13,15 +13,15 @@ import javax.persistence.*;
 @Table
 public class Wishlist {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
     @ManyToOne
     @JoinColumn(name = "apartment_id")
     Apartment apartment;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
 //    public Wishlist() {}
 //

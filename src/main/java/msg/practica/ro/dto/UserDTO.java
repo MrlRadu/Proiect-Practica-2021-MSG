@@ -18,14 +18,6 @@ public class UserDTO{
 
     private String token;
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
     private String fullName;
 
     public UserDTO() {
@@ -35,5 +27,16 @@ public class UserDTO{
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", token='" + token + '\'' +
+                ", fullName='" + fullName + '\'' +
+                '}';
     }
 }

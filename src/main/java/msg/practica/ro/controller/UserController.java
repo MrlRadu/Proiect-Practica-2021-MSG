@@ -23,7 +23,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -156,7 +155,7 @@ public class UserController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        final UserDTO currentDTO =  new UserDTO();
+        final UserDTO currentDTO = new UserDTO();
         currentDTO.setEmail(userDetails.getUsername());
         currentDTO.setToken(token);
         currentDTO.setFullName(userDetails.getFullName());
@@ -168,11 +167,16 @@ public class UserController {
 
     private void authenticate(String username, String password) throws Exception {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            if (!userRepo.findByEmail(username).isVerified()) {
+                password="";
+            }
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
             throw new Exception("INVALID_CREDENTIALS", e);
+        }catch (NullPointerException e){
+            throw new UserNotFoundException("User not found");
         }
     }
 
