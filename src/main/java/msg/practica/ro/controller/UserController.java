@@ -156,6 +156,7 @@ public class UserController {
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         final UserDTO currentDTO = new UserDTO();
+        currentDTO.setId(userDetails.getId());
         currentDTO.setEmail(userDetails.getUsername());
         currentDTO.setToken(token);
         currentDTO.setFullName(userDetails.getFullName());

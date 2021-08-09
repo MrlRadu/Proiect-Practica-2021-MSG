@@ -78,6 +78,7 @@ public class WishlistController {
         return wishlistRepo.findAllByUserId(id);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/{userId}/{apartmentId}")
     @Operation(summary = "Add new wishlist")
     @ApiResponses(value = {
