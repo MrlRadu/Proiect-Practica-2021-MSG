@@ -3,13 +3,12 @@ package msg.practica.ro.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 @Getter
 @Setter
 public class UserDTO{
+
+    private Long id;
+
     private String firstName;
 
     private String lastName;
@@ -23,16 +22,20 @@ public class UserDTO{
     public UserDTO() {
     }
 
-    public UserDTO(String firstName, String lastName, String email) {
+    public UserDTO(Long id, String firstName, String lastName, String email, String token, String fullName) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.token = token;
+        this.fullName = fullName;
     }
 
     @Override
     public String toString() {
         return "UserDTO{" +
-                "firstName='" + firstName + '\'' +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", token='" + token + '\'' +
