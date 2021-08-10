@@ -51,6 +51,7 @@ public class WishlistController {
     @Autowired
     private UserRepository userRepository;
 
+
     @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Get all wishlists")
     @ApiResponses(value = {
@@ -76,6 +77,7 @@ public class WishlistController {
     public List<Apartment> findAllApartments(@PathVariable Long id) {
         return wishlistRepo.findAllByUserId(id);
     }
+
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/{userId}/{apartmentId}")
@@ -159,8 +161,19 @@ public class WishlistController {
         Query q = entityManager.createQuery(criteriaDelete);
         q.executeUpdate();
 
-//        return "deleted successfully from wishlist";
+    }
 
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping("/statistics/{apId}")
+    @Operation(summary = "get how many times a apartment is in the wishlist of any user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully received the number",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Wishlist.class))}),
+            @ApiResponse(responseCode = "400", description = "Not successfully deleted from wishlist",
+                    content = @Content),})
+    public String ApartmentInWishlist(@PathVariable Long apId) {
+        return wishlistRepo.countDistinctByApartment_Id(apId).toString();
     }
 
     //with native query
