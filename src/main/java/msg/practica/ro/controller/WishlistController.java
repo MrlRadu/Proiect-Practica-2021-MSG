@@ -31,8 +31,7 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/wishlist")
@@ -203,18 +202,18 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "Percent not successfully calculated",
                     content = @Content),})
-    public Double percentApartmentsInWishlist(){
+    public HashMap<String, Double> percentApartmentsInWishlist(){
         Query queryWishlist = entityManager.createQuery("SELECT COUNT(DISTINCT apartment.id) AS apartamente_Wishlist FROM Wishlist");
         Double resultWishlist = Double.parseDouble(String.valueOf(queryWishlist.getSingleResult()));
 
         Query queryApartments = entityManager.createQuery("SELECT COUNT(id) AS apartamente_Total FROM Apartments");
         Double resultApartments = Double.parseDouble(String.valueOf(queryApartments.getSingleResult()));
 
-        //Double percent = (resultWishlist/resultApartments) * 100;
-        //return percent + " %";
+        HashMap<String, Double> mapWishlist = new HashMap<>();
+        mapWishlist.put("apartmentsInWishlist",resultWishlist);
+        mapWishlist.put("apartmentsTotal",resultApartments);
 
-        Double percent = resultWishlist/resultApartments;
-        return percent;
+        return mapWishlist;
 
     }
 
