@@ -180,4 +180,29 @@ public class WishlistController {
 //        return "Deleted from wishlist";// where apartmentId = " + apartment.getId() + " and userEmail = " + user.getEmail();
 //    }
 
+    //STATISTICS PIE CHART
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping("/statistics")
+    @Operation(summary = "Get percent of apartments which appear in wishlist")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Percent successfully calculated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Wishlist.class))}),
+            @ApiResponse(responseCode = "400", description = "Percent not successfully calculated",
+                    content = @Content),})
+    public Double percentApartmentsInWishlist(){
+        Query queryWishlist = entityManager.createQuery("SELECT COUNT(DISTINCT apartment.id) AS apartamente_Wishlist FROM Wishlist");
+        Double resultWishlist = Double.parseDouble(String.valueOf(queryWishlist.getSingleResult()));
+
+        Query queryApartments = entityManager.createQuery("SELECT COUNT(id) AS apartamente_Total FROM Apartments");
+        Double resultApartments = Double.parseDouble(String.valueOf(queryApartments.getSingleResult()));
+
+        //Double percent = (resultWishlist/resultApartments) * 100;
+        //return percent + " %";
+
+        Double percent = resultWishlist/resultApartments;
+        return percent;
+
+    }
+
 }
