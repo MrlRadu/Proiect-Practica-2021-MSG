@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import msg.practica.ro.exception.UserNotFoundException;
 import msg.practica.ro.model.Apartment;
 import msg.practica.ro.model.User;
 import msg.practica.ro.model.Wishlist;
@@ -119,13 +120,13 @@ public class WishlistController {
                             schema = @Schema(implementation = Wishlist.class))}),
             @ApiResponse(responseCode = "400", description = "pdf not successfully generated",
                     content = @Content),})
-    @RequestMapping(value = "/pdf/{email}", method = RequestMethod.GET,
+    @RequestMapping(value = "/pdf/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> wishlistReport(@PathVariable String email) throws DocumentException, IOException {
+    public ResponseEntity<InputStreamResource> wishlistReport(@PathVariable Long id) throws DocumentException, IOException {
 
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
         List<Apartment> apartments = wishlistRepo.findAllByUserId(user.getId());
-        System.out.println(email);
+//        System.out.println(email);
         ByteArrayInputStream bis = GeneratePdfReport.generatePdf(apartments);
 
         var headers = new HttpHeaders();
