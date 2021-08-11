@@ -70,6 +70,7 @@ public class UserController {
         return userRepo.findAll();
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Get an user by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the user",
@@ -114,7 +115,8 @@ public class UserController {
         }
     }
 
-    @PutMapping("")
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PutMapping("/updateUserDetails")
     @Operation(summary = "Update user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User successfully updated",
@@ -122,8 +124,13 @@ public class UserController {
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", description = "User not successfully updated",
                     content = @Content),})
-    public User updateUser(@RequestBody final User u) {
-        return userRepo.save(u);
+    public User updateUser(@RequestBody @Valid User u) {
+        System.out.println("a intrat aici");
+        User usr = userRepo.findById(u.getId()).orElseThrow();
+        usr.setFirstName(u.getFirstName());
+        usr.setLastName(u.getLastName());
+        usr.setEmail(u.getEmail());
+        return userRepo.save(usr);
     }
 
 
