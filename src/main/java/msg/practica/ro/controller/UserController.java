@@ -129,7 +129,7 @@ public class UserController {
         User usr = userRepo.findById(u.getId()).orElseThrow();
         usr.setFirstName(u.getFirstName());
         usr.setLastName(u.getLastName());
-        usr.setEmail(u.getEmail());
+        //usr.setEmail(u.getEmail());
         return userRepo.save(usr);
     }
 
