@@ -118,7 +118,7 @@ public class UserService implements IUserService, UserDetailsService {
         mail.setTemplateId("d-262ee6fa7efd49c2b55efc724563a094");
         Personalization personalization2=new Personalization();
         personalization2.addTo(new Email(user.getEmail()));
-        String verifyURL = siteURL + "/passwordreset?code=" + user.getVerificationCode();
+        String verifyURL = siteURL + "/password-reset?code=" + user.getVerificationCode();
         personalization2.addDynamicTemplateData("link2",verifyURL);
         sendMail(mail, personalization2);
     }
