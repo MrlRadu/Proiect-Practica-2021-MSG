@@ -16,6 +16,7 @@ import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
 import msg.practica.ro.service.CustomUserDetails;
 import msg.practica.ro.service.UserService;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
@@ -169,16 +170,28 @@ public class UserController {
     private void authenticate(String username, String password) throws Exception {
         try {
             if (!userRepo.findByEmail(username).isVerified()) {
-                password="";
+                password = "";
             }
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
             throw new Exception("INVALID_CREDENTIALS", e);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new UserNotFoundException("User not found");
         }
+    }
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping("/reset")
+    public void resetPassword(@RequestBody @Valid String email) throws IOException {
+        String siteURL = "http://localhost:4200";
+        service.resetPasswordVerify(email,siteURL);
+    }
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping("/reset/{code}/pass")
+    public void resetPasswordVerified(@PathVariable String code,@RequestBody @Valid String password) {
+        service.resetPassword(password,code);
+
     }
 
 //    @CrossOrigin(origins = "http://localhost:4200")

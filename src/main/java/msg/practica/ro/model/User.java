@@ -41,4 +41,17 @@ public class User {
         super();
         this.verified = false;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", verified=" + verified +
+                ", verificationCode='" + verificationCode + '\'' +
+                '}';
+    }
 }
