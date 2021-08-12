@@ -17,5 +17,8 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     @Query("select count(w.apartment )from Wishlist w where w.apartment.id = ?1")
     Long countDistinctByApartment_Id(Long apartmentID);
 
+    @Query("select count(w.apartment) from Wishlist w join Apartments a on w.apartment.id = a.id where a.owner.id = ?1")
+    Long countApartmentsBySpecificOwnerInWishlist(Long ownerId);
+
     Wishlist findByUserAndApartment(User user, Apartment apartment);
 }

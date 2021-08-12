@@ -130,7 +130,6 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User not successfully updated",
                     content = @Content),})
     public User updateUser(@RequestBody @Valid User u) {
-        System.out.println("a intrat aici");
         User usr = userRepo.findById(u.getId()).orElseThrow();
         usr.setFirstName(u.getFirstName());
         usr.setLastName(u.getLastName());

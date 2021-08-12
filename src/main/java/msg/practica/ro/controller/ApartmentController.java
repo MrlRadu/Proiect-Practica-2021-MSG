@@ -60,6 +60,22 @@ public class ApartmentController {
                 .orElseThrow(() -> new ApartmentNotFoundException(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
+    @Operation(summary = "Get the apartments by owner id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the apartment",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Apartment.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Apartment not found",
+                    content = @Content)})
+    @GetMapping("/getByOwner/{ownerId}")
+    public List<Apartment> findByOwnerId(@Parameter(description = "id of owner to be searched")
+                              @PathVariable long ownerId) {
+        return apartmentRepo.findApartmentsByOwner(ownerId);
+    }
+
 
     @PostMapping("")
     @Operation(summary = "Add new apartment")
