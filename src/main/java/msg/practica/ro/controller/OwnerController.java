@@ -25,6 +25,7 @@ public class OwnerController {
     @Autowired
     private OwnerRepository ownerRepo;
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Get all owners")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the list of owners",
@@ -37,6 +38,7 @@ public class OwnerController {
         return ownerRepo.findAll();
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(summary = "Get an owner by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the owner",
@@ -53,6 +55,7 @@ public class OwnerController {
                 .orElseThrow(() -> new OwnerNotFoundException(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("")
     @Operation(summary = "Add new owner")
     @ApiResponses(value = {
@@ -66,6 +69,7 @@ public class OwnerController {
         return ownerRepo.save(onr);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @PutMapping("")
     @Operation(summary = "Update owner")
     @ApiResponses(value = {
@@ -78,6 +82,7 @@ public class OwnerController {
         return ownerRepo.save(o);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete owner with certain id")
     @ApiResponses(value = {
