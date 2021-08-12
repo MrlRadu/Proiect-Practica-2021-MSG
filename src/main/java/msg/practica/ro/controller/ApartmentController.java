@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
 @RequestMapping("/api/apartments")
 @Tag(name = "Apartments", description = "CRUD Operations for Apartments")
 public class ApartmentController {
@@ -30,7 +30,7 @@ public class ApartmentController {
     @Autowired
     private OwnerRepository ownerRepo;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Get all apartments")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the list of apartments",
@@ -43,7 +43,7 @@ public class ApartmentController {
         return apartmentRepo.findAll();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Get an apartment by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the apartment",
@@ -60,7 +60,7 @@ public class ApartmentController {
                 .orElseThrow(() -> new ApartmentNotFoundException(id));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Get the apartments by owner id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the apartment",
@@ -78,6 +78,7 @@ public class ApartmentController {
 
 
     @PostMapping("")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Add new apartment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "the apartment was persisted successfully",
@@ -95,6 +96,7 @@ public class ApartmentController {
     }
 
     @PutMapping("")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Update apartment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Apartment successfully updated",
@@ -107,6 +109,7 @@ public class ApartmentController {
     }
 
     @DeleteMapping("/{id}")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Delete apartment with certain id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Apartment successfully deleted",

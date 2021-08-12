@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
 @RequestMapping("/api/wishlist")
 @Tag(name = "Wishlist", description = "CRUD Operations for Wishlist")
 @Transactional
@@ -52,7 +53,7 @@ public class WishlistController {
     private UserRepository userRepository;
 
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Get all wishlists")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the list of wishlists",
@@ -72,14 +73,14 @@ public class WishlistController {
                             array = @ArraySchema(schema = @Schema(implementation = Wishlist.class)))}),
             @ApiResponse(responseCode = "404", description = "List not found",
                     content = @Content)})
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @GetMapping("/{id}")
     public List<Apartment> findAllApartments(@PathVariable Long id) {
         return wishlistRepo.findAllByUserId(id);
     }
 
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @PostMapping("/{userId}/{apartmentId}")
     @Operation(summary = "Add new wishlist")
     @ApiResponses(value = {
@@ -93,7 +94,7 @@ public class WishlistController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete wishlist with certain id")
     @ApiResponses(value = {
@@ -112,7 +113,7 @@ public class WishlistController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "generate pdf with apartments from wishlist")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "pdf successfully generated",
@@ -141,7 +142,7 @@ public class WishlistController {
 
 
     //delete din wishlist -> where user=... and apart=...
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @DeleteMapping("/user/{userId}/apartment/{apId}")
     @Operation(summary = "Delete apartment from user wishlist")
     @ApiResponses(value = {
@@ -163,7 +164,7 @@ public class WishlistController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @GetMapping("/statistics/{apId}")
     @Operation(summary = "get how many times a apartment is in the wishlist of any user")
     @ApiResponses(value = {
@@ -194,7 +195,7 @@ public class WishlistController {
 //    }
 
     //STATISTICS PIE CHART
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @GetMapping("/statistics")
     @Operation(summary = "Get percent of apartments which appear in wishlist")
     @ApiResponses(value = {
@@ -218,7 +219,7 @@ public class WishlistController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @GetMapping("/byOwner/{ownerId}")
     @Operation(summary = "get how many times an apartment from a specific owner is in the wishlist of any user")
     @ApiResponses(value = {

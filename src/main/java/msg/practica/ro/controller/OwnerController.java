@@ -19,13 +19,14 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
 @RequestMapping("/api/owners")
 @Tag(name = "Owners", description = "CRUD Operations for Owners")
 public class OwnerController {
     @Autowired
     private OwnerRepository ownerRepo;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Get all owners")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the list of owners",
@@ -38,7 +39,7 @@ public class OwnerController {
         return ownerRepo.findAll();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Get an owner by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the owner",
@@ -55,7 +56,7 @@ public class OwnerController {
                 .orElseThrow(() -> new OwnerNotFoundException(id));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @PostMapping("")
     @Operation(summary = "Add new owner")
     @ApiResponses(value = {
@@ -69,7 +70,7 @@ public class OwnerController {
         return ownerRepo.save(onr);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @PutMapping("")
     @Operation(summary = "Update owner")
     @ApiResponses(value = {
@@ -82,7 +83,7 @@ public class OwnerController {
         return ownerRepo.save(o);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete owner with certain id")
     @ApiResponses(value = {
