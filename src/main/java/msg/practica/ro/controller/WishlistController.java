@@ -218,4 +218,17 @@ public class WishlistController {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping("/byOwner/{ownerId}")
+    @Operation(summary = "get how many times an apartment from a specific owner is in the wishlist of any user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully received the number",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Wishlist.class))}),
+            @ApiResponse(responseCode = "400", description = "Not successfully deleted from wishlist",
+                    content = @Content),})
+    public Long ApartmentsBySpecificOwnerInWishlist(@PathVariable Long ownerId) {
+        return wishlistRepo.countApartmentsBySpecificOwnerInWishlist(ownerId);
+    }
+
 }
