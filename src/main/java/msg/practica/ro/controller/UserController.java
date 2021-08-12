@@ -96,7 +96,6 @@ public class UserController {
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", description = "User was NOT persisted successfully",
                     content = @Content),})
-
     public UserDTO registerUserAccount(@RequestBody @Valid User user) throws IOException {
         String siteURL = "http://localhost:4200";
         return service.registerNewUserAccount(user, siteURL);
@@ -104,7 +103,13 @@ public class UserController {
 
     //return registered;
 
-
+    @Operation(summary = "Verify email address")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Verify email sent successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "400", description = "Failed to send email",
+                    content = @Content),})
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/verify")
     public String verifyUser(@Param("code") String code) {
@@ -187,12 +192,30 @@ public class UserController {
             throw new UserNotFoundException("User not found");
         }
     }
+    @Operation(summary = "Request the reset email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "email sent",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid email supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content)})
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/reset")
     public void resetPassword(@RequestBody @Valid String email) throws IOException {
         String siteURL = "http://localhost:4200";
         service.resetPasswordVerify(email,siteURL);
     }
+    @Operation(summary = "Reset the password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "password reset successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "400", description = "password reset failed",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content)})
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/reset/{code}/pass")
     public void resetPasswordVerified(@PathVariable String code,@RequestBody @Valid String password) {
