@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
 @RequestMapping("/api/pictures")
 @Tag(name = "Pictures", description = "CRUD Operations for Pictures")
 public class PictureController {

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
 @RequestMapping("/api/users")
 @Tag(name = "Users", description = "CRUD Operations for Users")
 public class UserController {
@@ -58,6 +59,7 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Get all users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the list of users",
@@ -70,7 +72,7 @@ public class UserController {
         return userRepo.findAll();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Get an user by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the user",
@@ -87,7 +89,7 @@ public class UserController {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200") //solved Cors errors
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @PostMapping("/register")
     @Operation(summary = "Add new user")
     @ApiResponses(value = {
@@ -110,7 +112,7 @@ public class UserController {
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", description = "Failed to send email",
                     content = @Content),})
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @GetMapping("/verify")
     public String verifyUser(@Param("code") String code) {
         if (service.verify(code)) {
@@ -120,7 +122,7 @@ public class UserController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @PutMapping("/updateUserDetails")
     @Operation(summary = "Update user")
     @ApiResponses(value = {
@@ -139,6 +141,7 @@ public class UserController {
 
 
     @DeleteMapping("/{id}")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @Operation(summary = "Delete user with certain id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User successfully deleted",
@@ -156,7 +159,7 @@ public class UserController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200") //solved Cors errors
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
@@ -201,7 +204,7 @@ public class UserController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content)})
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @PostMapping("/reset")
     public void resetPassword(@RequestBody @Valid String email) throws IOException {
         String siteURL = "http://localhost:4200";
@@ -216,14 +219,14 @@ public class UserController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content)})
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @PostMapping("/reset/{code}/pass")
     public void resetPasswordVerified(@PathVariable String code,@RequestBody @Valid String password) {
         service.resetPassword(password,code);
 
     }
 
-//    @CrossOrigin(origins = "http://localhost:4200")
+//    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
 //    @RequestMapping("/login")
 //    public boolean login(@RequestBody User user) {
 //        System.out.println("aici" + user.toString());
