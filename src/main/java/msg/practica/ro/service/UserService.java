@@ -100,7 +100,7 @@ public class UserService implements IUserService, UserDetailsService {
         //http://localhost:8080/api/users/verify?code=
         String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
         System.out.println(verifyURL);
-        personalization.addDynamicTemplateData("link",siteURL);
+        personalization.addDynamicTemplateData("link",verifyURL);
         personalization.addTo(new Email(user.getEmail()));
 
         sendMail(mail, personalization);
