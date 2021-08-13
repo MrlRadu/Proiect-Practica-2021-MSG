@@ -16,7 +16,6 @@ import msg.practica.ro.model.User;
 import msg.practica.ro.repository.UserRepository;
 import msg.practica.ro.service.CustomUserDetails;
 import msg.practica.ro.service.UserService;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
@@ -90,7 +89,7 @@ public class UserController {
     }
 
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
-    @PostMapping("/register")
+    @PostMapping("/register/{port}")
     @Operation(summary = "Add new user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User persisted successfully",
@@ -98,8 +97,8 @@ public class UserController {
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", description = "User was NOT persisted successfully",
                     content = @Content),})
-    public UserDTO registerUserAccount(@RequestBody @Valid User user) throws IOException {
-        String siteURL = "http://localhost:4200";
+    public UserDTO registerUserAccount(@RequestBody @Valid User user, @PathVariable String port) throws IOException {
+        String siteURL = "http://localhost:" + port;
         return service.registerNewUserAccount(user, siteURL);
     }
 
@@ -195,6 +194,7 @@ public class UserController {
             throw new UserNotFoundException("User not found");
         }
     }
+
     @Operation(summary = "Request the reset email")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "email sent",
@@ -205,11 +205,12 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content)})
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
-    @PostMapping("/reset")
-    public void resetPassword(@RequestBody @Valid String email) throws IOException {
-        String siteURL = "http://localhost:4200";
-        service.resetPasswordVerify(email,siteURL);
+    @PostMapping("/reset/{port}")
+    public void resetPassword(@RequestBody @Valid String email, @PathVariable String port) throws IOException {
+        String siteURL = "http://localhost:" + port;
+        service.resetPasswordVerify(email, siteURL);
     }
+
     @Operation(summary = "Reset the password")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "password reset successfully",
@@ -221,8 +222,8 @@ public class UserController {
                     content = @Content)})
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201", "http://localhost:4202"})
     @PostMapping("/reset/{code}/pass")
-    public void resetPasswordVerified(@PathVariable String code,@RequestBody @Valid String password) {
-        service.resetPassword(password,code);
+    public void resetPasswordVerified(@PathVariable String code, @RequestBody @Valid String password) {
+        service.resetPassword(password, code);
 
     }
 
